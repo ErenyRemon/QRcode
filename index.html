@@ -1,0 +1,133 @@
+<!-- <!DOCTYPE html>
+<html lang="ar">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barcode Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .container {
+            margin: 50px;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <form id="barcodeForm" onsubmit="return false;">
+            <label for="barcodeInput">أدخل الباركود:</label>
+            <input type="text" id="barcodeInput" placeholder="ادخل الباركود">
+            <button type="button" onclick="scanBarcode()">مسح الباركود</button>
+        </form>
+    </div>
+
+    <script>
+        function scanBarcode() {
+            // هذه القيمة تعتبر القيمة التي يتم قراءتها من الباركود
+            let barcodeValue = "1234567890";
+
+            // إضافة القيمة إلى input بدون تحميل الصفحة
+            document.getElementById("barcodeInput").value = barcodeValue;
+        }
+    </script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسح الباركود باستخدام الكاميرا</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+        }
+        .container {
+            margin: 50px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #reader {
+            width: 300px;
+            margin-top: 20px;
+        }
+    </style>
+    <!-- تضمين مكتبة html5-qrcode -->
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <form id="barcodeForm" onsubmit="return false;">
+            <label for="barcodeInput">أدخل الباركود:</label>
+            <input type="text" id="barcodeInput" placeholder="ادخل الباركود">
+            <button type="button" onclick="startScanner()">مسح الباركود</button>
+        </form>
+
+        <!-- مكان لعرض الكاميرا ومسح الباركود -->
+        <div id="reader"></div>
+    </div>
+
+    <script>
+        function startScanner() {
+            // بدء تشغيل مكتبة html5-qrcode واختيار الكاميرا
+            const html5QrCode = new Html5Qrcode("reader");
+            
+            html5QrCode.start(
+                { facingMode: "environment" }, // استخدام الكاميرا الخلفية
+                {
+                    fps: 10,    // عدد الإطارات في الثانية
+                    qrbox: { width: 250, height: 250 }  // حجم نافذة قراءة الباركود
+                },
+                (decodedText) => {
+                    // عند العثور على باركود يتم إدخال القيمة في حقل الإدخال
+                    document.getElementById("barcodeInput").value = decodedText;
+
+                    // إيقاف المسح بعد العثور على باركود
+                    html5QrCode.stop().then(() => {
+                        console.log("تم إيقاف المسح.");
+                    }).catch(err => {
+                        console.error("خطأ عند إيقاف المسح: ", err);
+                    });
+                },
+                (errorMessage) => {
+                    // يمكن عرض أخطاء القراءة هنا إذا لزم الأمر
+                    console.warn("خطأ أثناء قراءة الباركود: ", errorMessage);
+                }
+            ).catch((err) => {
+                // التعامل مع أخطاء بدء الكاميرا
+                console.error("خطأ عند تشغيل الكاميرا: ", err);
+            });
+        }
+    </script>
+</body>
+</html>
