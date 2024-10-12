@@ -6,32 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مسح الباركود باستخدام الكاميرا</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            direction: rtl;
-            text-align: right;
-        }
-
-        .container {
-            margin: 50px;
-        }
-
-        input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            width: 300px;
-        }
-
-        button {
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        #reader {
-            width: 300px;
-            margin-top: 20px;
-        }
+        /* أنماط CSS الخاصة بك هنا */
     </style>
     <!-- تضمين مكتبة html5-qrcode -->
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
@@ -44,45 +19,28 @@
             <input type="text" id="barcodeInput" placeholder="ادخل الباركود">
             <button type="button" onclick="startScanner()">مسح الباركود</button>
         </form>
-
-        <!-- مكان لعرض الكاميرا ومسح الباركود -->
         <div id="reader"></div>
     </div>
 
     <script>
         function startScanner() {
             const html5QrCode = new Html5Qrcode("reader");
-
-            Html5Qrcode.getCameras().then(devices => {
-                if (devices && devices.length) {
-                    // إذا كانت الكاميرات متاحة، اختر الكاميرا الخلفية
-                    var cameraId = devices[0].id;
-                    html5QrCode.start(
-                        { facingMode: "environment" }, 
-                        {
-                            fps: 10,    // عدد الإطارات في الثانية
-                            qrbox: { width: 250, height: 250 }  // حجم نافذة قراءة الباركود
-                        },
-                        (decodedText) => {
-                            document.getElementById("barcodeInput").value = decodedText;
-                            html5QrCode.stop().then(() => {
-                                console.log("تم إيقاف المسح.");
-                            }).catch(err => {
-                                console.error("خطأ عند إيقاف المسح: ", err);
-                            });
-                        },
-                        (errorMessage) => {
-                            console.warn("خطأ أثناء قراءة الباركود: ", errorMessage);
-                        }
-                    ).catch((err) => {
-                        console.error("خطأ عند تشغيل الكاميرا: ", err);
-                        alert("حدث خطأ عند تشغيل الكاميرا. تأكد من أن المتصفح لديه الإذن للوصول إلى الكاميرا.");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    document.getElementById("barcodeInput").value = decodedText;
+                    html5QrCode.stop().then(() => {
+                        console.log("تم إيقاف المسح.");
+                    }).catch(err => {
+                        console.error("خطأ عند إيقاف المسح: ", err);
                     });
-                } else {
-                    alert("لم يتم العثور على كاميرات.");
+                },
+                (errorMessage) => {
+                    console.warn("خطأ أثناء قراءة الباركود: ", errorMessage);
                 }
-            }).catch(err => {
-                console.error("خطأ في الحصول على الكاميرات: ", err);
+            ).catch((err) => {
+                console.error("خطأ عند تشغيل الكاميرا: ", err);
             });
         }
     </script>
