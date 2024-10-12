@@ -51,33 +51,38 @@
 
     <script>
         function startScanner() {
-            // بدء تشغيل مكتبة html5-qrcode واختيار الكاميرا
             const html5QrCode = new Html5Qrcode("reader");
 
-            html5QrCode.start(
-                { facingMode: "environment" }, // استخدام الكاميرا الخلفية
-                {
-                    fps: 10,    // عدد الإطارات في الثانية
-                    qrbox: { width: 250, height: 250 }  // حجم نافذة قراءة الباركود
-                },
-                (decodedText) => {
-                    // عند العثور على باركود يتم إدخال القيمة في حقل الإدخال
-                    document.getElementById("barcodeInput").value = decodedText;
-
-                    // إيقاف المسح بعد العثور على باركود
-                    html5QrCode.stop().then(() => {
-                        console.log("تم إيقاف المسح.");
-                    }).catch(err => {
-                        console.error("خطأ عند إيقاف المسح: ", err);
+            Html5Qrcode.getCameras().then(devices => {
+                if (devices && devices.length) {
+                    // إذا كانت الكاميرات متاحة، اختر الكاميرا الخلفية
+                    var cameraId = devices[0].id;
+                    html5QrCode.start(
+                        { facingMode: "environment" }, 
+                        {
+                            fps: 10,    // عدد الإطارات في الثانية
+                            qrbox: { width: 250, height: 250 }  // حجم نافذة قراءة الباركود
+                        },
+                        (decodedText) => {
+                            document.getElementById("barcodeInput").value = decodedText;
+                            html5QrCode.stop().then(() => {
+                                console.log("تم إيقاف المسح.");
+                            }).catch(err => {
+                                console.error("خطأ عند إيقاف المسح: ", err);
+                            });
+                        },
+                        (errorMessage) => {
+                            console.warn("خطأ أثناء قراءة الباركود: ", errorMessage);
+                        }
+                    ).catch((err) => {
+                        console.error("خطأ عند تشغيل الكاميرا: ", err);
+                        alert("حدث خطأ عند تشغيل الكاميرا. تأكد من أن المتصفح لديه الإذن للوصول إلى الكاميرا.");
                     });
-                },
-                (errorMessage) => {
-                    // يمكن عرض أخطاء القراءة هنا إذا لزم الأمر
-                    console.warn("خطأ أثناء قراءة الباركود: ", errorMessage);
+                } else {
+                    alert("لم يتم العثور على كاميرات.");
                 }
-            ).catch((err) => {
-                // التعامل مع أخطاء بدء الكاميرا
-                console.error("خطأ عند تشغيل الكاميرا: ", err);
+            }).catch(err => {
+                console.error("خطأ في الحصول على الكاميرات: ", err);
             });
         }
     </script>
